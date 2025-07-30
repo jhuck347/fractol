@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hooks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhuck <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 04:44:30 by jhuck             #+#    #+#             */
-/*   Updated: 2024/10/15 04:44:33 by jhuck            ###   ########.fr       */
+/*   Updated: 2025/07/30 09:42:35 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,28 +34,22 @@ void	handle_zoom_keys(int keycode, t_fractol *data)
 	render_fractal(data);
 }
 
+static void	update_zoom_offset(int x, int y, t_fractol *data)
+{
+	data->offset_x = data->min_r + (double)x * (data->max_r - data->min_r) / WIDTH
+		- (x - WIDTH / 2.0) * 4.0 / WIDTH / data->zoom;
+	data->offset_y = data->max_i + (double)y * (data->min_i - data->max_i) / HEIGHT
+		- (y - HEIGHT / 2.0) * 4.0 / HEIGHT / data->zoom;
+}
+
 void	zoom(int button, int x, int y, t_fractol *data)
 {
-	double	mouse_re;
-	double	mouse_im;
-
-	mouse_re = data->min_r + (double)x * (data->max_r - data->min_r) / WIDTH;
-	mouse_im = data->max_i + (double)y * (data->min_i - data->max_i) / HEIGHT;
 	if (button == MOUSE_SCROLL_UP)
-	{
 		data->zoom *= ZOOM_FACTOR;
-		data->offset_x = mouse_re - (x - WIDTH / 2.0) * 4.0 / WIDTH
-			/ data->zoom;
-		data->offset_y = mouse_im - (y - HEIGHT / 2.0) * 4.0 / HEIGHT
-			/ data->zoom;
-	}
 	else if (button == MOUSE_SCROLL_DOWN)
-	{
 		data->zoom /= ZOOM_FACTOR;
-		data->offset_x = mouse_re - (x - WIDTH / 2.0) * 4.0 / WIDTH
-			/ data->zoom;
-		data->offset_y = mouse_im - (y - HEIGHT / 2.0) * 4.0 / HEIGHT
-			/ data->zoom;
-	}
+	else
+		return ;
+	update_zoom_offset(x, y, data);
 	render_fractal(data);
 }

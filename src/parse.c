@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jhuck <marvin@42.fr>                       +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 04:45:08 by jhuck             #+#    #+#             */
-/*   Updated: 2024/10/15 04:45:12 by jhuck            ###   ########.fr       */
+/*   Updated: 2025/07/30 09:48:03 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,22 +21,20 @@ static int	skip_space_sign_0x(char *color)
 		i++;
 	if (color[i] == '+')
 		i++;
-	if (color[i] == '0' && (color[i + 1] && (color[i + 1] == 'x'
-				|| color[i] == 'X')))
-		i = i + 2;
+	if (color[i] == '0' && (color[i + 1] == 'x' || color[i + 1] == 'X'))
+		i += 2;
 	return (i);
 }
 
 int	parse_color_hex(char *color)
 {
 	int	i;
-	int	x;
+	int	count;
 	int	n;
 
 	n = 0;
-	i = 0;
 	i = skip_space_sign_0x(color);
-	x = 0;
+	count = 0;
 	while (color[i] && ft_ishexdigit(color[i]))
 	{
 		if (ft_isdigit(color[i]))
@@ -44,9 +42,9 @@ int	parse_color_hex(char *color)
 		else
 			n = (n * 16) + (ft_toupper(color[i]) - 'A' + 10);
 		i++;
-		x++;
+		count++;
 	}
-	if (x == 6 && !color[i])
+	if (count == 6 && !color[i])
 		return (n);
 	return (-1);
 }
@@ -71,27 +69,23 @@ double	parse_float(char *str)
 {
 	int		i;
 	double	nb;
-	int		is_neg;
 	double	div;
+	int		is_neg;
 
 	nb = 0;
 	div = 0.1;
 	is_neg = 1;
 	i = skip_space_sign(str, &is_neg);
-	while (str[i] && ft_isdigit(str[i]) && str[i] != '.')
-	{
-		nb = (nb * 10.0) + (str[i] - '0');
-		i++;
-	}
+	while (str[i] && str[i] != '.' && ft_isdigit(str[i]))
+		nb = (nb * 10.0) + (str[i++] - '0');
 	if (str[i] == '.')
 		i++;
 	while (str[i] && ft_isdigit(str[i]))
 	{
-		nb = nb + ((str[i] - '0') * div);
+		nb += (str[i++] - '0') * div;
 		div *= 0.1;
-		i++;
 	}
-	if (str[i] && !ft_isdigit(str[i]))
+	if (str[i])
 		return (-42);
 	return (nb * is_neg);
 }

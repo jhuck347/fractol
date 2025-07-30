@@ -3,89 +3,72 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: jhuck <marvin@42.fr>                       +#+  +:+       +#+         #
+#    By: marvin <marvin@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/15 04:43:07 by jhuck             #+#    #+#              #
-#    Updated: 2024/10/15 04:43:09 by jhuck            ###   ########.fr        #
+#    Updated: 2025/07/30 10:01:10 by marvin           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= fractol
-OS		= $(shell uname)
+NAME		= fractol
 
-SRCDIR	= ./src
-FRADIR	= ./fractals
-INCDIR	= ./includes
-OBJDIR	= ./obj
+# ─── Paths ────────────────────────────────────────────────────────────────────
+SRC_DIR		= src
+FRACT_DIR	= fractals
+OBJ_DIR		= obj
+INC_DIR		= includes
+LIBFT_DIR	= libft
+MLX_DIR		= minilibx-linux
 
+# ─── Files ────────────────────────────────────────────────────────────────────
 SRC_FILES	= main.c hooks.c events.c render.c utils.c palette.c color.c helpers.c parse.c
-FRA_FILES	= fractals/julia.c fractals/mandelbrot.c fractals/burning_ship.c
+FRACT_FILES	= burning_ship.c mandelbrot.c julia.c
 
-SRC		= $(addprefix $(SRCDIR)/, $(SRC_FILES))
-OBJ		= $(addprefix $(OBJDIR)/, $(SRC_FILES:.c=.o) $(FRA_FILES:.c=.o))
+SRCS		= $(addprefix $(SRC_DIR)/, $(SRC_FILES)) \
+			  $(addprefix $(FRACT_DIR)/, $(FRACT_FILES))
 
-CC		= gcc
-CFLAGS	= -Wall -Wextra -Werror -g
+OBJS		= $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))
 
-ifeq ($(OS), Linux)
-	MLX		= ./lib/minilibx-linux/
-	MLX_LNK	= -L $(MLX) -lmlx -lXext -lX11
-	MLX_LIB	= $(MLX)libmlx.a
+LIBFT		= $(LIBFT_DIR)/libft.a
+MLX_LIB		= $(MLX_DIR)/libmlx.a
+
+# ─── Compilation ──────────────────────────────────────────────────────────────
+CC			= gcc
+CFLAGS		= -Wall -Wextra -Werror -g
+RM			= rm -f
+INCLUDES	= -I$(INC_DIR) -I$(LIBFT_DIR) -I$(PRINTF_DIR) -I$(MLX_DIR)
+
+ifeq ($(shell uname), Linux)
+	LINKS = -L$(MLX_DIR) -lmlx -lXext -lX11 -lm
 else
-	MLX		= ./lib/minilibx/
-	MLX_LNK	= -L $(MLX) -lmlx -framework OpenGL -framework AppKit
-	MLX_LIB	= $(MLX)libmlx.a
+	LINKS = -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit -lm
 endif
 
-MLX_INC	= -I $(MLX)
+# ─── Rules ────────────────────────────────────────────────────────────────────
+all: $(NAME)
 
-FT		= ./lib/libft/
-FT_LIB	= $(FT)libft.a
-FT_INC	= -I $(FT)
-FT_LNK	= -L $(FT) -lft -lpthread
+$(NAME): $(LIBFT) $(MLX_LIB) $(OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(LIBFT)  $(LINKS) -o $(NAME)
 
-PRINTF	= ./lib/ft_printf/
-PRINTF_LIB = $(PRINTF)libftprintf.a
-PRINTF_INC = -I $(PRINTF)
-PRINTF_LNK = -L $(PRINTF) -lftprintf
+$(OBJ_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-INCLUDES = -I $(INCDIR) $(MLX_INC) $(FT_INC) $(PRINTF_INC)
-
-all: obj $(FT_LIB) $(PRINTF_LIB) $(MLX_LIB) $(NAME)
-
-obj:
-	@mkdir -p $(OBJDIR)
-	@mkdir -p $(OBJDIR)/fractals
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.c includes/constants.h includes/fractol.h
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
-
-$(OBJDIR)/fractals/%.o: $(FRADIR)/%.c includes/constants.h includes/fractol.h
-	$(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
-
-$(FT_LIB):
-	@make -C $(FT)
-
-$(PRINTF_LIB):
-	@make -C $(PRINTF)
+$(LIBFT):
+	@make -C $(LIBFT_DIR)
 
 $(MLX_LIB):
-	@make -C $(MLX)
-
-$(NAME): $(OBJ)
-	$(CC) $(OBJ) $(MLX_LNK) $(FT_LNK) $(PRINTF_LNK) -lm -o $(NAME)
+	@make -C $(MLX_DIR)
 
 clean:
-	@rm -rf $(OBJDIR)
-	@make clean -C $(FT)
-	@make clean -C $(PRINTF)
-	@make clean -C $(MLX)
+	$(RM) -r $(OBJ_DIR)
+	@make clean -C $(LIBFT_DIR)
+	@make clean -C $(MLX_DIR)
 
 fclean: clean
-	@rm -rf $(NAME)
-	@make fclean -C $(FT)
-	@make fclean -C $(PRINTF)
+	$(RM) $(NAME)
+	@make fclean -C $(LIBFT_DIR)
 
 re: fclean all
 
-.PHONY: all obj clean fclean re
+.PHONY: all clean fclean re
