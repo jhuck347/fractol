@@ -1,12 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   events.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhuck <juhuck@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/30 17:25:40 by juhuck            #+#    #+#             */
+/*   Updated: 2025/07/30 17:32:13 by juhuck           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/fractol.h"
 
 static void	zoom(t_fractol *data, double zoom)
 {
-	double	center_r = data->min_r + (data->max_r - data->min_r) / 2;
-	double	center_i = data->min_i + (data->max_i - data->min_i) / 2;
-	double	range_r = (data->max_r - data->min_r) * zoom;
-	double	range_i = (data->max_i - data->min_i) * zoom;
+	double	center_r;
+	double	center_i;
+	double	range_r;
+	double	range_i;
 
+	center_r = data->min_r + (data->max_r - data->min_r) / 2;
+	center_i = data->min_i + (data->max_i - data->min_i) / 2;
+	range_r = (data->max_r - data->min_r) * zoom;
+	range_i = (data->max_i - data->min_i) * zoom;
 	data->min_r = center_r - range_r / 2;
 	data->max_r = center_r + range_r / 2;
 	data->min_i = center_i - range_i / 2;
@@ -15,24 +31,40 @@ static void	zoom(t_fractol *data, double zoom)
 
 static void	move(t_fractol *data, double distance, char dir)
 {
-	double	range_r = data->max_r - data->min_r;
-	double	range_i = data->max_i - data->min_i;
+	double	range_r;
+	double	range_i;
 
+	range_r = data->max_r - data->min_r;
+	range_i = data->max_i - data->min_i;
 	if (dir == 'R')
-		data->min_r += range_r * distance, data->max_r += range_r * distance;
+	{
+		data->min_r += range_r * distance;
+		data->max_r += range_r * distance;
+	}
 	else if (dir == 'L')
-		data->min_r -= range_r * distance, data->max_r -= range_r * distance;
+	{
+		data->min_r -= range_r * distance;
+		data->max_r -= range_r * distance;
+	}
 	else if (dir == 'U')
-		data->min_i += range_i * distance, data->max_i += range_i * distance;
+	{
+		data->min_i += range_i * distance;
+		data->max_i += range_i * distance;
+	}
 	else if (dir == 'D')
-		data->min_i -= range_i * distance, data->max_i -= range_i * distance;
+	{
+		data->min_i -= range_i * distance;
+		data->max_i -= range_i * distance;
+	}
 }
 
 static void	handle_mouse_zoom(t_fractol *data, int x, int y)
 {
-	int		dx = x - WIDTH / 2;
-	int		dy = y - HEIGHT / 2;
+	int	dx;
+	int	dy;
 
+	dx = x - WIDTH / 2;
+	dy = y - HEIGHT / 2;
 	zoom(data, 0.5);
 	if (dx < 0)
 		move(data, (double)(-dx) / WIDTH, 'L');

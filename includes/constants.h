@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   constants.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: juhuck <juhuck@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/30 17:21:23 by juhuck            #+#    #+#             */
+/*   Updated: 2025/08/02 13:56:04 by juhuck           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CONSTANTS_H
 # define CONSTANTS_H
 
@@ -58,7 +70,7 @@
 # define MOUSE_MIDDLE      3
 # define MOUSE_SCROLL_UP   4
 # define MOUSE_SCROLL_DOWN 5
-# define MOUSE_CLICK       1  // Preferimos click izquierdo por convención
+# define MOUSE_CLICK       1
 
 // ----------------------------
 // Events

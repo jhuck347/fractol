@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: marvin <marvin@student.42.fr>              +#+  +:+       +#+         #
+#    By: juhuck <juhuck@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/10/15 04:43:07 by jhuck             #+#    #+#              #
-#    Updated: 2025/07/30 10:01:10 by marvin           ###   ########.fr        #
+#    Updated: 2025/08/02 12:47:36 by juhuck           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,13 +21,13 @@ LIBFT_DIR	= libft
 MLX_DIR		= minilibx-linux
 
 # ─── Files ────────────────────────────────────────────────────────────────────
-SRC_FILES	= main.c hooks.c events.c render.c utils.c palette.c color.c helpers.c parse.c
+SRC_FILES	= main.c hooks.c events.c render.c utils.c palette.c color.c helpers.c helpers2.c parse.c
 FRACT_FILES	= burning_ship.c mandelbrot.c julia.c
 
-SRCS		= $(addprefix $(SRC_DIR)/, $(SRC_FILES)) \
+SRC_ALL		= $(addprefix $(SRC_DIR)/, $(SRC_FILES)) \
 			  $(addprefix $(FRACT_DIR)/, $(FRACT_FILES))
 
-OBJS		= $(patsubst %.c, $(OBJ_DIR)/%.o, $(SRCS))
+OBJ_ALL		= $(addprefix $(OBJ_DIR)/, $(SRC_ALL:.c=.o))
 
 LIBFT		= $(LIBFT_DIR)/libft.a
 MLX_LIB		= $(MLX_DIR)/libmlx.a
@@ -36,7 +36,8 @@ MLX_LIB		= $(MLX_DIR)/libmlx.a
 CC			= gcc
 CFLAGS		= -Wall -Wextra -Werror -g
 RM			= rm -f
-INCLUDES	= -I$(INC_DIR) -I$(LIBFT_DIR) -I$(PRINTF_DIR) -I$(MLX_DIR)
+MKDIR_P		= mkdir -p
+INCLUDES	= -I$(INC_DIR) -I$(LIBFT_DIR) -I$(MLX_DIR)
 
 ifeq ($(shell uname), Linux)
 	LINKS = -L$(MLX_DIR) -lmlx -lXext -lX11 -lm
@@ -47,27 +48,29 @@ endif
 # ─── Rules ────────────────────────────────────────────────────────────────────
 all: $(NAME)
 
-$(NAME): $(LIBFT) $(MLX_LIB) $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(LIBFT)  $(LINKS) -o $(NAME)
+$(NAME): $(LIBFT) $(MLX_LIB) $(OBJ_ALL)
+	@echo "🔗 Linking $(NAME)..."
+	@$(CC) $(CFLAGS) $(INCLUDES) $(OBJ_ALL) $(LIBFT) $(LINKS) -o $(NAME)
 
 $(OBJ_DIR)/%.o: %.c
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(MKDIR_P) $(dir $@)
+	@echo "🛠️  Compiling $<"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(LIBFT):
-	@make -C $(LIBFT_DIR)
+$(LIBFT): $(shell find $(LIBFT_DIR)/src -type f -name "*.c")
+	@$(MAKE) -C $(LIBFT_DIR)
 
 $(MLX_LIB):
-	@make -C $(MLX_DIR)
+	@$(MAKE) -C $(MLX_DIR)
 
 clean:
-	$(RM) -r $(OBJ_DIR)
-	@make clean -C $(LIBFT_DIR)
-	@make clean -C $(MLX_DIR)
+	@$(RM) -r $(OBJ_DIR)
+	@$(MAKE) clean -C $(LIBFT_DIR)
+	@$(MAKE) clean -C $(MLX_DIR)
 
 fclean: clean
-	$(RM) $(NAME)
-	@make fclean -C $(LIBFT_DIR)
+	@$(RM) $(NAME)
+	@$(MAKE) fclean -C $(LIBFT_DIR)
 
 re: fclean all
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hooks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: juhuck <juhuck@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/15 04:44:30 by jhuck             #+#    #+#             */
-/*   Updated: 2025/07/30 09:42:35 by marvin           ###   ########.fr       */
+/*   Updated: 2025/07/30 18:12:16 by juhuck           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,11 @@ void	handle_zoom_keys(int keycode, t_fractol *data)
 
 static void	update_zoom_offset(int x, int y, t_fractol *data)
 {
-	data->offset_x = data->min_r + (double)x * (data->max_r - data->min_r) / WIDTH
+	data->offset_x = data->min_r + (double)x
+		* (data->max_r - data->min_r) / WIDTH
 		- (x - WIDTH / 2.0) * 4.0 / WIDTH / data->zoom;
-	data->offset_y = data->max_i + (double)y * (data->min_i - data->max_i) / HEIGHT
+	data->offset_y = data->max_i + (double)y
+		* (data->min_i - data->max_i) / HEIGHT
 		- (y - HEIGHT / 2.0) * 4.0 / HEIGHT / data->zoom;
 }
 
